@@ -1,5 +1,8 @@
 # Vantage Chatbot
 
+[![00848FB1-D98D-483F-803E-CB58A985B4A6.png](https://i.postimg.cc/W1fvN90J/00848FB1-D98D-483F-803E-CB58A985B4A6.png)](https://postimg.cc/rDWbgNn8)
+
+
 Production-oriented omni-channel customer service bot scaffold using FastAPI + PostgreSQL/Redis-ready architecture.
 
 ## Features
