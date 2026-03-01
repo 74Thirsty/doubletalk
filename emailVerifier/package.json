@@ -1,0 +1,11 @@
+{
+  "name": "emailverifier",
+  "version": "1.0.0",
+  "description": "Safe email list hygiene and verification tool",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js --in inputEmails.csv --out results.csv",
+    "lint": "node --check index.js && node --check lib/validateSyntax.js && node --check lib/dnsCheck.js && node --check lib/smtpCheck.js && node --check lib/scoring.js"
+  }
+}
