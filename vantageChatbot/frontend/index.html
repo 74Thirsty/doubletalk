@@ -3,99 +3,30 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vantage Frontend Docs & Licensing</title>
+<title>Vantage Chatbot Console</title>
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<header class="hero">
-<p class="eyebrow">Vantage Chatbot</p>
-<h1>Frontend Documentation & Licensing App</h1>
-<p class="subtitle">
-A lightweight portal for onboarding frontend contributors, understanding
-architecture, and reviewing licensing rules for redistribution.
-</p>
-</header>
-
-<main class="container">
-<aside class="sidebar">
-<button class="tab is-active" data-tab="docs">Documentation</button>
-<button class="tab" data-tab="licensing">Licensing</button>
-<button class="tab" data-tab="compliance">Compliance Checklist</button>
-</aside>
-
-<section class="panel" id="docs" aria-live="polite">
-<h2>Frontend Documentation</h2>
-<article>
-<h3>Purpose</h3>
-<p>
-This interface explains how to extend and maintain the customer
-support frontend surfaces that integrate with the Vantage backend.
-</p>
-</article>
-
-<article>
-<h3>Core principles</h3>
-<ul>
-<li>Design for support agents first: clarity over visual novelty.</li>
-<li>Keep component states deterministic to align with bot workflows.</li>
-<li>Prefer accessible, keyboard navigable interactions.</li>
-</ul>
-</article>
-
-<article>
-<h3>Suggested structure</h3>
-<pre><code>frontend/
-├── index.html
-├── styles.css
-└── app.js</code></pre>
-</article>
+<main class="layout">
+<section class="card config">
+<h1>Vantage Chatbot</h1>
+<p>Local web client for the FastAPI bot.</p>
+<label for="tenant">Tenant ID</label>
+<input id="tenant" type="number" min="1" value="1" />
+<label for="api">API Base URL</label>
+<input id="api" type="url" value="http://localhost:8000" />
+<button id="reset">Reset Session</button>
+<small id="session"></small>
 </section>
 
-<section class="panel hidden" id="licensing" aria-live="polite">
-<h2>Licensing Guide</h2>
-<p>
-The backend repository ships with <strong>MIT License</strong> terms.
-When distributing derivative frontend bundles, keep the following in
-place:
-</p>
-<ol>
-<li>Preserve the original copyright notice.</li>
-<li>Include the MIT permission and warranty disclaimer text.</li>
-<li>Document third-party package licenses in release artifacts.</li>
-</ol>
-<div class="license-card">
-<h3>Recommended NOTICE text</h3>
-<p>
-"This product includes software derived from the Vantage Chatbot
-project and is distributed under the MIT License."
-</p>
-</div>
-</section>
-
-<section class="panel hidden" id="compliance" aria-live="polite">
-<h2>Compliance Checklist</h2>
-<label class="item">
-<input type="checkbox" data-check />
-Added LICENSE or NOTICE file to deployment package.
-</label>
-<label class="item">
-<input type="checkbox" data-check />
-Verified all bundled npm dependencies have approved licenses.
-</label>
-<label class="item">
-<input type="checkbox" data-check />
-Linked licensing section in internal team documentation.
-</label>
-
-<div class="progress-wrap">
-<p id="progress-text">0 / 3 items completed</p>
-<div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0">
-<div class="bar-fill" id="bar-fill"></div>
-</div>
-</div>
+<section class="card chat">
+<div id="messages" class="messages" aria-live="polite"></div>
+<form id="chat-form" class="composer">
+<input id="message-input" type="text" placeholder="Type a message" autocomplete="off" required />
+<button type="submit">Send</button>
+</form>
 </section>
 </main>
-
 <script src="app.js"></script>
 </body>
 </html>

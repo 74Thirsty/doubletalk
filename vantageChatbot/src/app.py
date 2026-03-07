@@ -1,12 +1,19 @@
+from pathlib import Path
+from uuid import uuid4
+
 from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from src.adminApi.routes import router as admin_router
 from src.channelAdapters.messengerAdapter import parse_event, verify_signature
 from src.channelAdapters.telegramAdapter import parse_update
+from src.config import CORS_ALLOW_ORIGINS
 from src.core.conversationManager import ConversationManager
 from src.core.idempotency import seen_provider_message
-from src.core.types import ConversationState
+from src.core.types import ConversationState, InboundMessage
 from src.domains.customerService.handler import handle as cs_handle
 from src.domains.info.handler import handle as info_handle
 from src.domains.orders.handler import handle as orders_handle
@@ -19,6 +26,13 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title='Vantage Chatbot')
 app.include_router(admin_router)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=CORS_ALLOW_ORIGINS,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
 manager = ConversationManager()
 
 
@@ -75,6 +89,25 @@ def _process(inbound, db: Session):
     return {'status': 'processed', 'reply': outbound.text}
 
 
+class WebChatIn(BaseModel):
+    tenant_id: int
+    text: str = Field(min_length=1)
+    session_id: str = Field(min_length=1, max_length=120)
+
+
+@app.post('/api/chat')
+def web_chat(payload: WebChatIn, db: Session = Depends(get_db)):
+    inbound = InboundMessage(
+        tenant_id=payload.tenant_id,
+        channel_type='web',
+        channel_user_id=payload.session_id,
+        provider_message_id=f'web-{uuid4()}',
+        text=payload.text,
+        raw_payload=payload.model_dump(),
+    )
+    return _process(inbound, db)
+
+
 @app.post('/webhooks/telegram/{tenant_id}')
 def telegram_webhook(tenant_id: int, payload: dict, db: Session = Depends(get_db)):
     inbound = parse_update(tenant_id, payload)
@@ -100,3 +133,8 @@ async def messenger_webhook(tenant_id: int, request: Request, db: Session = Depe
             inbound = parse_event(tenant_id, event)
             _process(inbound, db)
     return {'status': 'ok'}
+
+
+frontend_dir = Path(__file__).resolve().parents[1] / 'frontend'
+if frontend_dir.exists():
+    app.mount('/', StaticFiles(directory=frontend_dir, html=True), name='frontend')

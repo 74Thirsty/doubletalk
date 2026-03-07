@@ -1,36 +1,75 @@
-const tabs = document.querySelectorAll('.tab');
-const panels = document.querySelectorAll('.panel');
-const checks = document.querySelectorAll('[data-check]');
-const progressText = document.querySelector('#progress-text');
-const bar = document.querySelector('.bar');
-const barFill = document.querySelector('#bar-fill');
+const tenantInput = document.querySelector('#tenant');
+const apiInput = document.querySelector('#api');
+const chatForm = document.querySelector('#chat-form');
+const messageInput = document.querySelector('#message-input');
+const messages = document.querySelector('#messages');
+const resetButton = document.querySelector('#reset');
+const sessionText = document.querySelector('#session');
 
-function showPanel(id) {
-	tabs.forEach((tab) => {
-		tab.classList.toggle('is-active', tab.dataset.tab === id);
-	});
-	
-	panels.forEach((panel) => {
-		panel.classList.toggle('hidden', panel.id !== id);
-	});
+const SESSION_KEY = 'vantage.sessionId';
+
+function getSessionId() {
+  let id = localStorage.getItem(SESSION_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(SESSION_KEY, id);
+  }
+  return id;
 }
 
-function updateProgress() {
-	const done = [...checks].filter((check) => check.checked).length;
-	const total = checks.length;
-	const percent = total === 0 ? 0 : (done / total) * 100;
-	
-	progressText.textContent = `${done} / ${total} items completed`;
-	bar.setAttribute('aria-valuenow', String(done));
-	barFill.style.width = `${percent}%`;
+function resetSession() {
+  const id = crypto.randomUUID();
+  localStorage.setItem(SESSION_KEY, id);
+  sessionText.textContent = `Session: ${id}`;
+  messages.innerHTML = '';
 }
 
-tabs.forEach((tab) => {
-	tab.addEventListener('click', () => showPanel(tab.dataset.tab));
+function addMessage(text, role) {
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+async function sendMessage(text) {
+  const base = apiInput.value.replace(/\/$/, '');
+  const payload = {
+    tenant_id: Number(tenantInput.value),
+    text,
+    session_id: getSessionId(),
+  };
+
+  const res = await fetch(`${base}/api/chat`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    throw new Error(`request failed with ${res.status}`);
+  }
+  const data = await res.json();
+  return data.reply || `[${data.status}]`;
+}
+
+chatForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const text = messageInput.value.trim();
+  if (!text) {
+    return;
+  }
+
+  addMessage(text, 'user');
+  messageInput.value = '';
+
+  try {
+    const reply = await sendMessage(text);
+    addMessage(reply, 'bot');
+  } catch (error) {
+    addMessage(`Error: ${error.message}`, 'bot');
+  }
 });
 
-checks.forEach((check) => {
-	check.addEventListener('change', updateProgress);
-});
-
-updateProgress();
+resetButton.addEventListener('click', resetSession);
+sessionText.textContent = `Session: ${getSessionId()}`;

@@ -1,9 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-DATABASE_URL = 'sqlite:///./vantagechatbot.db'
+from src.config import DATABASE_URL
 
-engine = create_engine(DATABASE_URL, future=True, connect_args={'check_same_thread': False})
+connect_args = {'check_same_thread': False} if DATABASE_URL.startswith('sqlite') else {}
+engine = create_engine(DATABASE_URL, future=True, connect_args=connect_args)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 Base = declarative_base()
 
