@@ -55,6 +55,14 @@ info@example.com
 - `status`
 - `notes`
 
+
+## Tests
+
+```bash
+cd emailVerifier
+npm test
+```
+
 ## Notes
 
 - Full emails are masked in console logs.

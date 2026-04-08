@@ -1,6 +1,6 @@
 emailMasked,syntaxValid,domain,mxFound,smtpResultCode,disposable,roleBased,status,notes
-v***@gmail.com,true,gmail.com,false,,false,false,invalid,Domain or MX missing; MX lookup failed; SMTP disabled
-h***@fake-invalid-domain-abc12345.org,true,fake-invalid-domain-abc12345.org,false,,false,false,invalid,Domain or MX missing; MX lookup failed; no A/AAAA records; SMTP disabled
-n***@10minutemail.com,true,10minutemail.com,false,,true,false,invalid,Domain or MX missing; MX lookup failed; SMTP disabled
-s***@example.com,true,example.com,false,,false,true,invalid,Domain or MX missing; MX lookup failed; SMTP disabled
-n***@gmail.com,true,gmail.com,false,,false,false,invalid,Domain or MX missing; MX lookup failed; SMTP disabled
+v***@gmail.com,true,gmail.com,false,,false,false,invalid,Domain or MX missing; MX lookup failed; no A/AAAA records; SMTP disabled
+***invalid***,false,,false,,false,false,invalid,Invalid syntax
+p***@not-a-real-tld-xyz12345.com,true,not-a-real-tld-xyz12345.com,false,,false,false,invalid,Domain or MX missing; MX lookup failed; no A/AAAA records; SMTP disabled
+i***@example.com,true,example.com,false,,false,true,invalid,Domain or MX missing; MX lookup failed; no A/AAAA records; SMTP disabled
+r***@mailinator.com,true,mailinator.com,false,,true,false,invalid,Domain or MX missing; MX lookup failed; no A/AAAA records; SMTP disabled

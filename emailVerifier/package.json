@@ -6,6 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node index.js --in inputEmails.csv --out results.csv",
-    "lint": "node --check index.js && node --check lib/validateSyntax.js && node --check lib/dnsCheck.js && node --check lib/smtpCheck.js && node --check lib/scoring.js"
+    "lint": "node --check index.js && node --check lib/validateSyntax.js && node --check lib/dnsCheck.js && node --check lib/smtpCheck.js && node --check lib/scoring.js",
+    "test": "node --test tests/*.test.js"
   }
 }
