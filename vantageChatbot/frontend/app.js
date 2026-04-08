@@ -8,17 +8,36 @@ const sessionText = document.querySelector('#session');
 
 const SESSION_KEY = 'vantage.sessionId';
 
+function uuid() {
+  if (globalThis.crypto?.randomUUID) {
+    return globalThis.crypto.randomUUID();
+  }
+
+  if (globalThis.crypto?.getRandomValues) {
+    const arr = globalThis.crypto.getRandomValues(new Uint8Array(16));
+    arr[6] = (arr[6] & 0x0f) | 0x40;
+    arr[8] = (arr[8] & 0x3f) | 0x80;
+
+    return [...arr].map((b, i) => {
+      const hex = b.toString(16).padStart(2, '0');
+      return [4, 6, 8, 10].includes(i) ? `-${hex}` : hex;
+    }).join('');
+  }
+
+  return `${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`;
+}
+
 function getSessionId() {
   let id = localStorage.getItem(SESSION_KEY);
   if (!id) {
-    id = crypto.randomUUID();
+    id = uuid();
     localStorage.setItem(SESSION_KEY, id);
   }
   return id;
 }
 
 function resetSession() {
-  const id = crypto.randomUUID();
+  const id = uuid();
   localStorage.setItem(SESSION_KEY, id);
   sessionText.textContent = `Session: ${id}`;
   messages.innerHTML = '';
